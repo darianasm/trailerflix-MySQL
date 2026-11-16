@@ -1,7 +1,8 @@
 -- 1. Crear la base de datos y seleccionarla
-DROP DATABASE IF EXISTS catalogo_peliculas;
-CREATE DATABASE catalogo_peliculas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE catalogo_peliculas;
+DROP DATABASE IF EXISTS trailerflix;
+CREATE DATABASE trailerflix CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE trailerflix;
+SET NAMES utf8mb4;
 
 -- 2. Crear tablas principales
 CREATE TABLE categoria (
@@ -151,3 +152,326 @@ INSERT INTO contenido (titulo, sinopsis, temporadas, trailer, id_categoria) VALU
 ('Interestelar', 'Con la Tierra al borde del colapso, un expiloto se une a una misión que atraviesa un agujero de gusano en busca de un nuevo hogar para la humanidad.', 0, 'https://www.youtube.com/results?search_query=Interestelar+trailer+oficial', 1),
 ('Barbie', 'Tras una crisis existencial, Barbie abandona su mundo perfecto y viaja junto a Ken al mundo real, donde descubre que las cosas no son como imaginaba.', 0, 'https://www.youtube.com/results?search_query=Barbie+2023+trailer+oficial', 1),
 ('Dark', 'La desaparición de dos niños en un pueblo alemán revela los vínculos ocultos entre cuatro familias y un misterio que se extiende a lo largo de varias generaciones.', 3, NULL, 2);
+
+-- =====================================================================
+-- 10. Relaciones contenido <-> genero
+-- =====================================================================
+CREATE TEMPORARY TABLE seed_contenido_genero (
+    titulo VARCHAR(200) NOT NULL,
+    genero VARCHAR(100) NOT NULL
+);
+
+INSERT INTO seed_contenido_genero (titulo, genero) VALUES
+('The Crown', 'Drama'),
+('The Crown', 'Hechos verídicos'),
+('Riverdale', 'Drama'),
+('Riverdale', 'Misterio'),
+('The Mandalorian', 'Ciencia Ficción'),
+('The Mandalorian', 'Aventura'),
+('The Mandalorian', 'Acción'),
+('The Umbrella Academy', 'Ciencia Ficción'),
+('The Umbrella Academy', 'Acción'),
+('The Umbrella Academy', 'Fantasía'),
+('Gambito de Dama', 'Drama'),
+('Enola Holmes', 'Misterio'),
+('Enola Holmes', 'Aventura'),
+('Enola Holmes', 'Crimen'),
+('Guasón', 'Drama'),
+('Guasón', 'Crimen'),
+('Guasón', 'Suspenso'),
+('Avengers: Endgame', 'Acción'),
+('Avengers: Endgame', 'Ciencia Ficción'),
+('Avengers: Endgame', 'Aventura'),
+('Black Widow', 'Acción'),
+('Black Widow', 'Ciencia Ficción'),
+('Black Widow', 'Aventura'),
+('AVA', 'Acción'),
+('AVA', 'Suspenso'),
+('AVA', 'Crimen'),
+('AntiTrust', 'Suspenso'),
+('AntiTrust', 'Crimen'),
+('AntiTrust', 'Drama'),
+('La Liga de la Justicia de Zack Snyder', 'Acción'),
+('La Liga de la Justicia de Zack Snyder', 'Ciencia Ficción'),
+('La Liga de la Justicia de Zack Snyder', 'Aventura'),
+('Stranger Things', 'Ciencia Ficción'),
+('Stranger Things', 'Misterio'),
+('Stranger Things', 'Terror'),
+('La Casa de Papel', 'Crimen'),
+('La Casa de Papel', 'Suspenso'),
+('La Casa de Papel', 'Acción'),
+('El Eternauta', 'Ciencia Ficción'),
+('El Eternauta', 'Suspenso'),
+('El Eternauta', 'Drama'),
+('Relatos Salvajes', 'Drama'),
+('Relatos Salvajes', 'Comedia'),
+('Relatos Salvajes', 'Crimen'),
+('El Secreto de sus Ojos', 'Drama'),
+('El Secreto de sus Ojos', 'Misterio'),
+('El Secreto de sus Ojos', 'Crimen'),
+('Argentina, 1985', 'Drama'),
+('Argentina, 1985', 'Hechos verídicos'),
+('Breaking Bad', 'Drama'),
+('Breaking Bad', 'Crimen'),
+('Breaking Bad', 'Suspenso'),
+('Merlina', 'Misterio'),
+('Merlina', 'Fantasía'),
+('Merlina', 'Comedia'),
+('The Last of Us', 'Drama'),
+('The Last of Us', 'Ciencia Ficción'),
+('The Last of Us', 'Terror'),
+('Duna', 'Ciencia Ficción'),
+('Duna', 'Aventura'),
+('Duna', 'Drama'),
+('Oppenheimer', 'Drama'),
+('Oppenheimer', 'Hechos verídicos'),
+('Coco', 'Animación'),
+('Coco', 'Familia'),
+('Coco', 'Aventura'),
+('Toy Story', 'Animación'),
+('Toy Story', 'Familia'),
+('Toy Story', 'Comedia'),
+('Friends', 'Comedia'),
+('Friends', 'Romance'),
+('The Office', 'Comedia'),
+('Interestelar', 'Ciencia Ficción'),
+('Interestelar', 'Drama'),
+('Interestelar', 'Aventura'),
+('Barbie', 'Comedia'),
+('Barbie', 'Fantasía'),
+('Barbie', 'Aventura'),
+('Dark', 'Ciencia Ficción'),
+('Dark', 'Misterio'),
+('Dark', 'Drama');
+
+INSERT INTO contenido_genero (id_contenido, id_genero)
+SELECT c.id_contenido, g.id_genero
+FROM seed_contenido_genero s
+JOIN contenido c ON c.titulo = s.titulo
+JOIN genero g ON g.nombre = s.genero;
+
+DROP TEMPORARY TABLE seed_contenido_genero;
+
+-- =====================================================================
+-- 11. Relaciones contenido <-> actor (reparto)
+-- =====================================================================
+CREATE TEMPORARY TABLE seed_contenido_actor (
+    titulo VARCHAR(200) NOT NULL,
+    actor VARCHAR(150) NOT NULL
+);
+
+INSERT INTO seed_contenido_actor (titulo, actor) VALUES
+('The Crown', 'Claire Foy'),
+('The Crown', 'Olivia Colman'),
+('The Crown', 'Imelda Staunton'),
+('The Crown', 'Matt Smith'),
+('The Crown', 'Tobias Menzies'),
+('The Crown', 'Vanessa Kirby'),
+('Riverdale', 'KJ Apa'),
+('Riverdale', 'Lili Reinhart'),
+('Riverdale', 'Camila Mendes'),
+('Riverdale', 'Cole Sprouse'),
+('Riverdale', 'Madelaine Petsch'),
+('The Mandalorian', 'Pedro Pascal'),
+('The Mandalorian', 'Gina Carano'),
+('The Mandalorian', 'Giancarlo Esposito'),
+('The Mandalorian', 'Carl Weathers'),
+('The Mandalorian', 'Katee Sackhoff'),
+('The Umbrella Academy', 'Elliot Page'),
+('The Umbrella Academy', 'Tom Hopper'),
+('The Umbrella Academy', 'David Castañeda'),
+('The Umbrella Academy', 'Emmy Raver-Lampman'),
+('The Umbrella Academy', 'Robert Sheehan'),
+('The Umbrella Academy', 'Aidan Gallagher'),
+('Gambito de Dama', 'Anya Taylor-Joy'),
+('Gambito de Dama', 'Thomas Brodie-Sangster'),
+('Gambito de Dama', 'Harry Melling'),
+('Gambito de Dama', 'Moses Ingram'),
+('Gambito de Dama', 'Bill Camp'),
+('Enola Holmes', 'Millie Bobby Brown'),
+('Enola Holmes', 'Henry Cavill'),
+('Enola Holmes', 'Sam Claflin'),
+('Enola Holmes', 'Helena Bonham Carter'),
+('Guasón', 'Joaquin Phoenix'),
+('Guasón', 'Robert De Niro'),
+('Guasón', 'Zazie Beetz'),
+('Guasón', 'Frances Conroy'),
+('Avengers: Endgame', 'Robert Downey Jr.'),
+('Avengers: Endgame', 'Chris Evans'),
+('Avengers: Endgame', 'Mark Ruffalo'),
+('Avengers: Endgame', 'Chris Hemsworth'),
+('Avengers: Endgame', 'Scarlett Johansson'),
+('Avengers: Endgame', 'Jeremy Renner'),
+('Black Widow', 'Florence Pugh'),
+('Black Widow', 'David Harbour'),
+('Black Widow', 'Rachel Weisz'),
+('Black Widow', 'O-T Fagbenle'),
+('AVA', 'Jessica Chastain'),
+('AVA', 'John Malkovich'),
+('AVA', 'Colin Farrell'),
+('AVA', 'Common'),
+('AVA', 'Geena Davis'),
+('AntiTrust', 'Ryan Phillippe'),
+('AntiTrust', 'Tim Robbins'),
+('AntiTrust', 'Rachael Leigh Cook'),
+('AntiTrust', 'Claire Forlani'),
+('La Liga de la Justicia de Zack Snyder', 'Ben Affleck'),
+('La Liga de la Justicia de Zack Snyder', 'Gal Gadot'),
+('La Liga de la Justicia de Zack Snyder', 'Jason Momoa'),
+('La Liga de la Justicia de Zack Snyder', 'Ezra Miller'),
+('La Liga de la Justicia de Zack Snyder', 'Ray Fisher'),
+('Stranger Things', 'Winona Ryder'),
+('Stranger Things', 'Finn Wolfhard'),
+('Stranger Things', 'Gaten Matarazzo'),
+('Stranger Things', 'Caleb McLaughlin'),
+('Stranger Things', 'Noah Schnapp'),
+('La Casa de Papel', 'Úrsula Corberó'),
+('La Casa de Papel', 'Álvaro Morte'),
+('La Casa de Papel', 'Itziar Ituño'),
+('La Casa de Papel', 'Pedro Alonso'),
+('La Casa de Papel', 'Miguel Herrán'),
+('El Eternauta', 'Ricardo Darín'),
+('El Eternauta', 'Carla Peterson'),
+('El Eternauta', 'César Troncoso'),
+('El Eternauta', 'Andrea Pietra'),
+('El Eternauta', 'Ariel Staltari'),
+('Relatos Salvajes', 'Leonardo Sbaraglia'),
+('Relatos Salvajes', 'Érica Rivas'),
+('Relatos Salvajes', 'Darío Grandinetti'),
+('Relatos Salvajes', 'Rita Cortese'),
+('Relatos Salvajes', 'Oscar Martínez'),
+('El Secreto de sus Ojos', 'Soledad Villamil'),
+('El Secreto de sus Ojos', 'Guillermo Francella'),
+('El Secreto de sus Ojos', 'Pablo Rago'),
+('El Secreto de sus Ojos', 'Javier Godino'),
+('Argentina, 1985', 'Peter Lanzani'),
+('Argentina, 1985', 'Alejandra Flechner'),
+('Argentina, 1985', 'Norman Briski'),
+('Breaking Bad', 'Bryan Cranston'),
+('Breaking Bad', 'Aaron Paul'),
+('Breaking Bad', 'Anna Gunn'),
+('Breaking Bad', 'Dean Norris'),
+('Breaking Bad', 'Bob Odenkirk'),
+('Merlina', 'Jenna Ortega'),
+('Merlina', 'Catherine Zeta-Jones'),
+('Merlina', 'Luis Guzmán'),
+('Merlina', 'Emma Myers'),
+('Merlina', 'Gwendoline Christie'),
+('The Last of Us', 'Gabriel Luna'),
+('The Last of Us', 'Anna Torv'),
+('The Last of Us', 'Nick Offerman'),
+('Duna', 'Timothée Chalamet'),
+('Duna', 'Rebecca Ferguson'),
+('Duna', 'Oscar Isaac'),
+('Duna', 'Josh Brolin'),
+('Oppenheimer', 'Emily Blunt'),
+('Oppenheimer', 'Matt Damon'),
+('Coco', 'Anthony Gonzalez'),
+('Coco', 'Gael García Bernal'),
+('Coco', 'Benjamin Bratt'),
+('Coco', 'Alanna Ubach'),
+('Toy Story', 'Tom Hanks'),
+('Toy Story', 'Tim Allen'),
+('Toy Story', 'Don Rickles'),
+('Toy Story', 'Jim Varney'),
+('Friends', 'Jennifer Aniston'),
+('Friends', 'Courteney Cox'),
+('Friends', 'Lisa Kudrow'),
+('Friends', 'Matt LeBlanc'),
+('Friends', 'Matthew Perry'),
+('Friends', 'David Schwimmer'),
+('The Office', 'Steve Carell'),
+('The Office', 'Rainn Wilson'),
+('The Office', 'John Krasinski'),
+('The Office', 'Jenna Fischer'),
+('The Office', 'Ed Helms'),
+('Interestelar', 'Matthew McConaughey'),
+('Interestelar', 'Anne Hathaway'),
+('Interestelar', 'Michael Caine'),
+('Barbie', 'Margot Robbie'),
+('Barbie', 'Ryan Gosling'),
+('Barbie', 'America Ferrera'),
+('Barbie', 'Kate McKinnon'),
+('Dark', 'Louis Hofmann'),
+('Dark', 'Lisa Vicari'),
+('Dark', 'Oliver Masucci'),
+('Dark', 'Jördis Triebel'),
+('Dark', 'Maja Schöne');
+
+INSERT INTO contenido_actor (id_contenido, id_actor)
+SELECT c.id_contenido, a.id_actor
+FROM seed_contenido_actor s
+JOIN contenido c ON c.titulo = s.titulo
+JOIN actor a ON a.nombre = s.actor;
+
+DROP TEMPORARY TABLE seed_contenido_actor;
+
+-- =====================================================================
+-- 12. Relaciones contenido <-> plataforma
+-- =====================================================================
+CREATE TEMPORARY TABLE seed_contenido_plataforma (
+    titulo VARCHAR(200) NOT NULL,
+    plataforma VARCHAR(100) NOT NULL
+);
+
+INSERT INTO seed_contenido_plataforma (titulo, plataforma) VALUES
+('The Crown', 'Netflix'),
+('Riverdale', 'Netflix'),
+('Riverdale', 'HBO Max'),
+('The Mandalorian', 'Disney+'),
+('The Umbrella Academy', 'Netflix'),
+('Gambito de Dama', 'Netflix'),
+('Enola Holmes', 'Netflix'),
+('Guasón', 'HBO Max'),
+('Guasón', 'Amazon Prime'),
+('Avengers: Endgame', 'Disney+'),
+('Black Widow', 'Disney+'),
+('AVA', 'Netflix'),
+('AVA', 'Amazon Prime'),
+('AntiTrust', 'Amazon Prime'),
+('La Liga de la Justicia de Zack Snyder', 'HBO Max'),
+('Stranger Things', 'Netflix'),
+('La Casa de Papel', 'Netflix'),
+('El Eternauta', 'Netflix'),
+('Relatos Salvajes', 'HBO Max'),
+('Relatos Salvajes', 'Amazon Prime'),
+('El Secreto de sus Ojos', 'Netflix'),
+('El Secreto de sus Ojos', 'Amazon Prime'),
+('Argentina, 1985', 'Amazon Prime'),
+('Breaking Bad', 'Netflix'),
+('Merlina', 'Netflix'),
+('The Last of Us', 'HBO Max'),
+('Duna', 'HBO Max'),
+('Duna', 'Amazon Prime'),
+('Oppenheimer', 'Amazon Prime'),
+('Coco', 'Disney+'),
+('Toy Story', 'Disney+'),
+('Friends', 'HBO Max'),
+('Friends', 'Netflix'),
+('The Office', 'Amazon Prime'),
+('The Office', 'Netflix'),
+('Interestelar', 'Amazon Prime'),
+('Interestelar', 'HBO Max'),
+('Barbie', 'HBO Max'),
+('Barbie', 'Amazon Prime'),
+('Dark', 'Netflix');
+
+INSERT INTO contenido_plataforma (id_contenido, id_plataforma)
+SELECT c.id_contenido, p.id_plataforma
+FROM seed_contenido_plataforma s
+JOIN contenido c ON c.titulo = s.titulo
+JOIN plataforma p ON p.nombre = s.plataforma;
+
+DROP TEMPORARY TABLE seed_contenido_plataforma;
+
+-- =====================================================================
+-- 13. Verificación de la carga
+-- =====================================================================
+SELECT 'categoria' AS tabla, COUNT(*) AS filas FROM categoria
+UNION ALL SELECT 'genero', COUNT(*) FROM genero
+UNION ALL SELECT 'plataforma', COUNT(*) FROM plataforma
+UNION ALL SELECT 'actor', COUNT(*) FROM actor
+UNION ALL SELECT 'contenido', COUNT(*) FROM contenido
+UNION ALL SELECT 'contenido_genero', COUNT(*) FROM contenido_genero
+UNION ALL SELECT 'contenido_actor', COUNT(*) FROM contenido_actor
+UNION ALL SELECT 'contenido_plataforma', COUNT(*) FROM contenido_plataforma;
