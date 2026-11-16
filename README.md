@@ -2,15 +2,15 @@
 
 ## Descripción del proyecto
 
-Trailerflix es una API REST para administrar un catálogo de películas y series. El proyecto está desarrollado con Node.js y Express, se conecta a una base de datos MySQL mediante Sequelize y expone operaciones CRUD completas sobre contenidos y sobre las tablas relacionadas (categorías, géneros, actores y plataformas). Esta tercera preentrega retoma la API de la preentrega anterior, que usaba MongoDB, y la migra a un modelo relacional; además incluye un catálogo web con Bootstrap renderizado en el servidor con EJS y documentación detallada en Markdown.
+API REST para administrar un catálogo de películas y series, desarrollada con Node.js, Express, Sequelize y MySQL. Incluye CRUD completo, búsquedas y filtros combinados, y un catálogo web renderizado con EJS y Bootstrap.
 
-## Origen del set de datos
+## Consigna de la tarea
 
-El set de datos proviene del archivo `trailerflix.json` utilizado en las clases, que contiene películas y series con título, categoría, géneros, reparto, temporadas, trailer y sinopsis. Para esta preentrega ese archivo se normalizó en un modelo relacional de ocho tablas y se cargó en MySQL a través del script `database/trailerflix.sql`, manteniendo los 30 contenidos originales y agregando la información de plataformas.
-
-## Objetivo
-
-El objetivo de la entrega es diseñar un modelo relacional de más de seis tablas, migrar los datos a MySQL y construir una API REST con Sequelize que resuelva las operaciones CRUD, las búsquedas de la primera preentrega y los filtros combinados, devolviendo el código de estado HTTP correcto en cada caso. También se busca aplicar buenas prácticas: credenciales fuera del código, `.env.example`, `.gitignore` y documentación de todos los endpoints.
+- Diseñar un modelo relacional de más de seis tablas.
+- Migrar los datos de la preentrega anterior a MySQL.
+- Construir una API REST con Sequelize para el CRUD de contenidos y tablas relacionadas.
+- Resolver las búsquedas de la primera preentrega y los filtros combinados.
+- Devolver el código de estado HTTP correcto y documentar los endpoints.
 
 ## Tecnologías utilizadas
 
@@ -21,10 +21,9 @@ El objetivo de la entrega es diseñar un modelo relacional de más de seis tabla
 | Sequelize 6 | ORM para modelar las tablas, relaciones y consultas. |
 | MySQL 8 | Base de datos relacional `trailerflix`. |
 | mysql2 | Driver de conexión entre Node.js y MySQL. |
-| dotenv | Lectura de credenciales y configuración desde `.env`. |
+| dotenv | Carga de configuración desde `.env`. |
 | EJS | Motor de plantillas que renderiza el catálogo en el servidor. |
 | Bootstrap 5 | Estilos de las páginas web; el CSS propio se sirve desde `/public`. |
-| MongoDB | Motor utilizado en la preentrega anterior, mencionado como etapa previa del proyecto. |
 
 ## Modelo de datos
 
@@ -82,28 +81,33 @@ trailerflix-MySQL/
 
 ## Instalación y ejecución
 
-Primero se importa el script SQL en MySQL y luego se instalan las dependencias con `npm install`. Después se copia `.env.example` a `.env`, se completan las credenciales locales y se inicia el servidor con `npm run dev` (o `npm start`). La API y el catálogo web quedan disponibles en `http://localhost:3000`.
+1. Importar la base de datos:
 
-```bash
-mysql -u root -p -e "source database/trailerflix.sql"
-npm install
-cp .env.example .env
-npm run dev
-```
+   ```bash
+   mysql -u root -p < database/trailerflix.sql
+   ```
 
-El script también se puede importar desde MySQL Workbench o desde Laragon. Los modelos de Sequelize mapean las tablas existentes: el esquema se crea con el script SQL y no con `sequelize.sync()`, para no modificar la base desde el servidor.
+2. Instalar las dependencias:
 
-## Variables de entorno
+   ```bash
+   npm install
+   ```
 
-| Variable | Descripción | Ejemplo |
-| --- | --- | --- |
-| `PORT` | Puerto del servidor Express. | `3000` |
-| `DB_HOST` | Host de MySQL. | `localhost` |
-| `DB_PORT` | Puerto de MySQL. | `3306` |
-| `DB_NAME` | Nombre de la base de datos. | `trailerflix` |
-| `DB_USER` | Usuario de MySQL. | `root` |
-| `DB_PASSWORD` | Contraseña de MySQL (no se sube al repositorio). | `******` |
-| `DB_LOGGING` | Activa o desactiva el log de las consultas SQL. | `false` |
+3. Crear el archivo de configuración y completar los datos de MySQL:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Iniciar el servidor:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Abrir `http://localhost:3000`.
+
+El esquema se crea con el script SQL; Sequelize solo mapea las tablas existentes.
 
 ## Endpoints principales
 
@@ -169,7 +173,3 @@ El endpoint `GET /contenidos` permite combinar búsquedas por título, categorí
 | `409 Conflict` | Nombre duplicado o registro relacionado que no puede eliminarse. |
 | `500 Internal Server Error` | Error inesperado del servidor o de la base de datos. |
 | `503 Service Unavailable` | La API no puede conectarse con MySQL. |
-
-## Seguridad y credenciales
-
-Las credenciales de MySQL se leen exclusivamente desde `.env`, que está incluido en `.gitignore` junto con `node_modules`. El repositorio incluye únicamente `.env.example` con valores de referencia y sin contraseñas reales; tampoco se almacenan claves de terceros ni secretos en el código.
