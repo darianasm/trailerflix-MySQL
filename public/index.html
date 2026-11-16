@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trailerflix · Catálogo</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <span class="brand-dot"></span> Trailerflix
+      </a>
+      <span class="badge rounded-pill badge-tech d-none d-md-inline">API REST · Express · Sequelize · MySQL</span>
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <a href="/api/contenidos" target="_blank" rel="noopener" class="btn btn-sm btn-outline-light">Ver JSON</a>
+        <button type="button" class="btn btn-sm btn-accent" id="btnNuevo">+ Nuevo contenido</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <h1>Catálogo Trailerflix</h1>
+      <p class="mb-3">
+        Películas y series almacenadas en MySQL, consultadas a través de la API REST
+        con Sequelize. Buscá, agregá, editá y eliminá contenidos desde esta página.
+      </p>
+      <div class="d-flex flex-wrap gap-2">
+        <span class="stat-pill"><strong id="statContenidos">–</strong> contenidos</span>
+        <span class="stat-pill"><strong id="statPeliculas">–</strong> películas</span>
+        <span class="stat-pill"><strong id="statSeries">–</strong> series</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container py-4">
+    <form id="formFiltros" class="card border-0 shadow-sm filter-card">
+      <div class="card-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-12 col-lg-4">
+            <label for="filtroTitulo" class="form-label">Buscar por título</label>
+            <input type="search" class="form-control" id="filtroTitulo" placeholder="Ej.: The Crown, Duna, Friends...">
+          </div>
+          <div class="col-6 col-lg-2">
+            <label for="filtroCategoria" class="form-label">Categoría</label>
+            <select class="form-select" id="filtroCategoria">
+              <option value="">Todas</option>
+            </select>
+          </div>
+          <div class="col-6 col-lg-2">
+            <label for="filtroGenero" class="form-label">Género</label>
+            <select class="form-select" id="filtroGenero">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <div class="col-6 col-lg-2">
+            <label for="filtroPlataforma" class="form-label">Plataforma</label>
+            <select class="form-select" id="filtroPlataforma">
+              <option value="">Todas</option>
+            </select>
+          </div>
+          <div class="col-6 col-lg-2 d-flex gap-2">
+            <button type="submit" class="btn btn-dark flex-grow-1">Filtrar</button>
+            <button type="button" class="btn btn-outline-secondary" id="btnLimpiar" title="Limpiar filtros">Limpiar</button>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center gap-3 mt-3">
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="filtroTrailer">
+            <label class="form-check-label" for="filtroTrailer">Solo con trailer</label>
+          </div>
+          <select class="form-select form-select-sm w-auto" id="filtroOrden" aria-label="Ordenar por">
+            <option value="titulo">Ordenar por título</option>
+            <option value="temporadas">Ordenar por temporadas</option>
+            <option value="id">Ordenar por id</option>
+          </select>
+          <span class="text-muted small ms-auto" id="contador"></span>
+        </div>
+      </div>
+    </form>
+
+    <div id="alerta" class="mt-3"></div>
+
+    <div id="contenidos" class="row g-4 mt-1" aria-live="polite"></div>
+
+    <div id="cargando" class="text-center py-5 d-none">
+      <div class="spinner-border text-danger" role="status"></div>
+      <p class="text-muted mt-2 mb-0">Cargando contenidos...</p>
+    </div>
+
+    <div id="sinResultados" class="text-center py-5 d-none">
+      <p class="display-6 mb-1">🔍</p>
+      <h2 class="h5">No se encontraron contenidos</h2>
+      <p class="text-muted mb-0">Probá con otros filtros o agregá un contenido nuevo.</p>
+    </div>
+  </main>
+
+  <footer class="py-4 text-center text-muted small">
+    <div class="container">
+      Trailerflix · Preentrega 3 · Node.js + Express + Sequelize + MySQL
+    </div>
+  </footer>
+
+  <!-- Modal detalle -->
+  <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="modalDetalleLabel"></h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="detalleContenido"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal formulario -->
+  <div class="modal fade" id="modalFormulario" tabindex="-1" aria-labelledby="modalFormularioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="formContenido" novalidate>
+          <div class="modal-header">
+            <h2 class="modal-title h5" id="modalFormularioLabel">Nuevo contenido</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="contenidoId">
+
+            <div class="row g-3">
+              <div class="col-12 col-md-8">
+                <label for="campoTitulo" class="form-label">Título *</label>
+                <input type="text" class="form-control" id="campoTitulo" maxlength="200" required>
+              </div>
+              <div class="col-6 col-md-2">
+                <label for="campoTemporadas" class="form-label">Temporadas *</label>
+                <input type="number" class="form-control" id="campoTemporadas" min="0" step="1" value="0" required>
+              </div>
+              <div class="col-6 col-md-2">
+                <label for="campoCategoria" class="form-label">Categoría *</label>
+                <select class="form-select" id="campoCategoria" required></select>
+              </div>
+
+              <div class="col-12">
+                <label for="campoSinopsis" class="form-label">Sinopsis *</label>
+                <textarea class="form-control" id="campoSinopsis" rows="3" required></textarea>
+              </div>
+
+              <div class="col-12">
+                <label for="campoTrailer" class="form-label">URL del trailer</label>
+                <input type="url" class="form-control" id="campoTrailer" placeholder="https://...">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="campoGeneros" class="form-label">Géneros</label>
+                <select class="form-select" id="campoGeneros" multiple size="6"></select>
+                <div class="form-text">Mantené Ctrl para elegir más de uno.</div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="campoPlataformas" class="form-label">Plataformas</label>
+                <select class="form-select" id="campoPlataformas" multiple size="6"></select>
+                <div class="form-text">Podés seleccionar varias.</div>
+              </div>
+            </div>
+
+            <div id="errorFormulario" class="alert alert-danger mt-3 mb-0 d-none" role="alert"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-danger" id="btnGuardar">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toasts"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

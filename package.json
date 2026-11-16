@@ -1,0 +1,28 @@
+{
+  "name": "trailerflix-mysql",
+  "version": "1.0.0",
+  "description": "API REST de Trailerflix desarrollada con Node.js, Express, Sequelize y MySQL",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "express",
+    "sequelize",
+    "mysql",
+    "api-rest",
+    "trailerflix"
+  ],
+  "author": "Dariana Sánchez",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "mysql2": "^3.24.6",
+    "sequelize": "^6.37.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
