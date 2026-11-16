@@ -3,6 +3,6 @@ const createCrudController = require('./crudController');
 
 module.exports = createCrudController(Actor, {
   nombre: 'actor',
-  ruta: '/api/actores',
+  ruta: '/actores',
   pk: 'idActor'
 });

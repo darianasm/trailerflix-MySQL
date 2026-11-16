@@ -5,6 +5,8 @@ const {
   DatabaseError
 } = require('sequelize');
 
+const { esRutaApi } = require('../utils/rutasApi');
+
 // Middleware centralizado: traduce los errores de Sequelize y de la API
 // a una respuesta JSON con el código de estado correspondiente.
 function errorHandler(error, req, res, next) {
@@ -36,7 +38,7 @@ function errorHandler(error, req, res, next) {
   }
 
   // Las rutas de la API siempre responden JSON; las páginas muestran el error.
-  if (!req.path.startsWith('/api') && req.accepts('html')) {
+  if (!esRutaApi(req) && req.accepts('html')) {
     return res.status(status).render('error', {
       titulo: `Error ${status}`,
       status,

@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const webController = require('../controllers/web.controller');
 
-// Vistas renderizadas con EJS. Los endpoints JSON siguen disponibles en /api.
+// Vistas renderizadas con EJS.
 router.get('/', webController.catalogo);
 
 router.get('/contenido/nuevo', webController.formularioNuevo);

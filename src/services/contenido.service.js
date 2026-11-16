@@ -199,7 +199,7 @@ async function guardarRelaciones(contenido, relaciones, transaction) {
   }
 }
 
-// Formato resumido que usan /api/catalogo y las búsquedas de la preentrega 1.
+// Formato resumido que usan /catalogo y las búsquedas de la preentrega 1.
 function formatearCatalogo(contenido) {
   const datos = contenido.toJSON ? contenido.toJSON() : contenido;
 

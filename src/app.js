@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 
 const routes = require('./routes');
-const legacyRoutes = require('./routes/legacy.routes');
 const webRoutes = require('./routes/web.routes');
 const notFound = require('./middlewares/notFound');
 const errorHandler = require('./middlewares/errorHandler');
@@ -21,10 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // API REST.
-app.use('/api', routes);
-
-// Alias de la primera preentrega sin el prefijo /api.
-app.use(legacyRoutes);
+app.use(routes);
 
 // Páginas HTML renderizadas con EJS.
 app.use(webRoutes);

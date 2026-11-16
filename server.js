@@ -12,7 +12,7 @@ async function iniciar() {
 
     app.listen(PORT, () => {
       console.log(`Servidor corriendo en http://localhost:${PORT}`);
-      console.log(`API disponible en http://localhost:${PORT}/api/contenidos`);
+      console.log(`API disponible en http://localhost:${PORT}/contenidos`);
     });
   } catch (error) {
     console.error('No se pudo iniciar el servidor:', error.message);

@@ -82,7 +82,7 @@ trailerflix-MySQL/
 
 ## Instalación y ejecución
 
-Primero se importa el script SQL en MySQL y luego se instalan las dependencias con `npm install`. Después se copia `.env.example` a `.env`, se completan las credenciales locales y se inicia el servidor con `npm run dev` (o `npm start`). La API queda disponible en `http://localhost:3000/api` y el catálogo web en `http://localhost:3000`.
+Primero se importa el script SQL en MySQL y luego se instalan las dependencias con `npm install`. Después se copia `.env.example` a `.env`, se completan las credenciales locales y se inicia el servidor con `npm run dev` (o `npm start`). La API y el catálogo web quedan disponibles en `http://localhost:3000`.
 
 ```bash
 mysql -u root -p -e "source database/trailerflix.sql"
@@ -109,31 +109,31 @@ El script también se puede importar desde MySQL Workbench o desde Laragon. Los 
 
 | Método | Endpoint | Descripción |
 | --- | --- | --- |
-| GET | `/api/contenidos` | Lista contenidos con filtros combinados. |
-| GET | `/api/contenidos/:id` | Obtiene un contenido por su id. |
-| POST | `/api/contenidos` | Crea un contenido. |
-| PUT | `/api/contenidos/:id` | Actualiza un contenido. |
-| DELETE | `/api/contenidos/:id` | Elimina un contenido. |
-| GET | `/api/catalogo` | Devuelve el catálogo en formato resumido. |
-| GET | `/api/titulo/:title` | Busca contenidos por título. |
-| GET | `/api/categoria/:cat` | Filtra por categoría. |
-| GET | `/api/reparto/:act` | Filtra por actor o actriz. |
-| GET | `/api/trailer/:id` | Devuelve el trailer de un contenido. |
-| GET | `/api/health` | Verifica el estado del servidor y de la base. |
-| GET/POST | `/api/categorias` | Lista o crea categorías. |
-| GET/PUT/DELETE | `/api/categorias/:id` | Consulta, actualiza o elimina una categoría. |
-| GET/POST | `/api/generos` | Lista o crea géneros. |
-| GET/PUT/DELETE | `/api/generos/:id` | Consulta, actualiza o elimina un género. |
-| GET/POST | `/api/actores` | Lista o crea actores. |
-| GET/PUT/DELETE | `/api/actores/:id` | Consulta, actualiza o elimina un actor. |
-| GET/POST | `/api/plataformas` | Lista o crea plataformas. |
-| GET/PUT/DELETE | `/api/plataformas/:id` | Consulta, actualiza o elimina una plataforma. |
+| GET | `/contenidos` | Lista contenidos con filtros combinados. |
+| GET | `/contenidos/:id` | Obtiene un contenido por su id. |
+| POST | `/contenidos` | Crea un contenido. |
+| PUT | `/contenidos/:id` | Actualiza un contenido. |
+| DELETE | `/contenidos/:id` | Elimina un contenido. |
+| GET | `/catalogo` | Devuelve el catálogo en formato resumido. |
+| GET | `/titulo/:title` | Busca contenidos por título. |
+| GET | `/categoria/:cat` | Filtra por categoría. |
+| GET | `/reparto/:act` | Filtra por actor o actriz. |
+| GET | `/trailer/:id` | Devuelve el trailer de un contenido. |
+| GET | `/health` | Verifica el estado del servidor y de la base. |
+| GET/POST | `/categorias` | Lista o crea categorías. |
+| GET/PUT/DELETE | `/categorias/:id` | Consulta, actualiza o elimina una categoría. |
+| GET/POST | `/generos` | Lista o crea géneros. |
+| GET/PUT/DELETE | `/generos/:id` | Consulta, actualiza o elimina un género. |
+| GET/POST | `/actores` | Lista o crea actores. |
+| GET/PUT/DELETE | `/actores/:id` | Consulta, actualiza o elimina un actor. |
+| GET/POST | `/plataformas` | Lista o crea plataformas. |
+| GET/PUT/DELETE | `/plataformas/:id` | Consulta, actualiza o elimina una plataforma. |
 
-Las búsquedas de la primera preentrega también están disponibles sin el prefijo `/api` (`/catalogo`, `/titulo/:title`, `/categoria/:cat`, `/reparto/:act` y `/trailer/:id`) para mantener compatibilidad. La tabla completa, los parámetros de filtrado, los ejemplos de request/response y los códigos de error están en [`docs/API.md`](docs/API.md).
+La tabla completa de endpoints, los parámetros de filtrado, los ejemplos de request/response y los códigos de error están en [`docs/API.md`](docs/API.md).
 
 ## Interfaz web con EJS
 
-El catálogo se renderiza en el servidor con EJS: los controladores consultan MySQL con Sequelize y envían los datos listos a las plantillas de `views/`, sin JavaScript del lado del cliente para mostrar contenido. Los filtros se envían por `GET` y las altas, ediciones y eliminaciones por `POST` con redirecciones y mensajes de confirmación.
+El catálogo se renderiza en el servidor con EJS: los controladores consultan MySQL con Sequelize y envían los datos listos a las plantillas de `views/`. Los filtros se envían por `GET` y las altas, ediciones y eliminaciones por `POST` con redirecciones y mensajes de confirmación.
 
 | Método | Ruta | Descripción |
 | --- | --- | --- |
@@ -156,7 +156,7 @@ Los errores de validación vuelven a mostrar el formulario con el detalle de los
 | Actualizar | `PUT` | `update` |
 | Eliminar | `DELETE` | `destroy` |
 
-El endpoint `GET /api/contenidos` permite combinar búsquedas por título, categoría, género, plataforma, actor, cantidad de temporadas y disponibilidad de trailer, además de ordenar los resultados. Para que los géneros y el reparto no se recorten cuando se filtra, primero se obtienen los ids que cumplen los criterios y después se traen los contenidos completos con sus asociaciones. Las altas y ediciones se ejecutan dentro de transacciones para que un error en una relación no deje contenidos incompletos.
+El endpoint `GET /contenidos` permite combinar búsquedas por título, categoría, género, plataforma, actor, cantidad de temporadas y disponibilidad de trailer, además de ordenar los resultados. Para que los géneros y el reparto no se recorten cuando se filtra, primero se obtienen los ids que cumplen los criterios y después se traen los contenidos completos con sus asociaciones. Las altas y ediciones se ejecutan dentro de transacciones para que un error en una relación no deje contenidos incompletos.
 
 ## Códigos de estado
 

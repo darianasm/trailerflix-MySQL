@@ -2,10 +2,9 @@
 
 API REST desarrollada con Node.js, Express, Sequelize y MySQL.
 
-- **URL base:** `http://localhost:3000/api`
+- **URL base:** `http://localhost:3000`
 - **Formato:** JSON (`Content-Type: application/json`)
 - **Base de datos:** `trailerflix` (8 tablas relacionadas)
-- **Alias de compatibilidad:** las búsquedas `/catalogo`, `/titulo/:title`, `/categoria/:cat`, `/reparto/:act` y `/trailer/:id` también responden en la raíz del servidor (`http://localhost:3000/catalogo`, etc.).
 - **Interfaz web:** `http://localhost:3000` (HTML renderizado en el servidor con EJS).
 
 ---
@@ -48,7 +47,7 @@ API REST desarrollada con Node.js, Express, Sequelize y MySQL.
 
 ---
 
-## 2. Filtros de `GET /api/contenidos` y `GET /api/catalogo`
+## 2. Filtros de `GET /contenidos` y `GET /catalogo`
 
 Todos los filtros son opcionales y se pueden combinar en la misma consulta.
 
@@ -69,7 +68,7 @@ Todos los filtros son opcionales y se pueden combinar en la misma consulta.
 Ejemplo combinado:
 
 ```bash
-curl "http://localhost:3000/api/contenidos?categoria=Serie&genero=Drama&plataforma=Netflix&temporadas=5&orden=titulo"
+curl "http://localhost:3000/contenidos?categoria=Serie&genero=Drama&plataforma=Netflix&temporadas=5&orden=titulo"
 ```
 
 Respuesta `200 OK`:
@@ -112,12 +111,12 @@ Si ningún contenido cumple los filtros, la respuesta es `200 OK` con `{ "total"
 
 ## 3. Contenidos
 
-### 3.1 GET `/api/contenidos/:id`
+### 3.1 GET `/contenidos/:id`
 
 Devuelve un contenido con su categoría, géneros, reparto y plataformas.
 
 ```bash
-curl "http://localhost:3000/api/contenidos/1"
+curl "http://localhost:3000/contenidos/1"
 ```
 
 Respuesta `200 OK`:
@@ -161,12 +160,12 @@ Errores posibles:
 { "error": true, "status": 404, "message": "No se encontró el contenido con id 9999." }
 ```
 
-### 3.2 POST `/api/contenidos`
+### 3.2 POST `/contenidos`
 
 Crea un contenido. Los campos `titulo`, `sinopsis`, `temporadas` e `idCategoria` son obligatorios. `generos`, `reparto` y `plataformas` son arrays opcionales de ids.
 
 ```bash
-curl -X POST "http://localhost:3000/api/contenidos" \
+curl -X POST "http://localhost:3000/contenidos" \
   -H "Content-Type: application/json" \
   -d '{
     "titulo": "Nueva serie",
@@ -180,7 +179,7 @@ curl -X POST "http://localhost:3000/api/contenidos" \
   }'
 ```
 
-Respuesta `201 Created` (incluye el header `Location: /api/contenidos/31`):
+Respuesta `201 Created` (incluye el header `Location: /contenidos/31`):
 
 ```json
 {
@@ -227,12 +226,12 @@ Si la categoría no existe: `400 Bad Request` con `"message": "La categoría con
 
 Si algún id de `generos`, `reparto` o `plataformas` no existe: `409 Conflict`. La creación se ejecuta dentro de una transacción, por lo que no queda ningún contenido incompleto si falla una relación.
 
-### 3.3 PUT `/api/contenidos/:id`
+### 3.3 PUT `/contenidos/:id`
 
 Actualiza los campos enviados. Los campos que no se envían conservan su valor. Si se envían `generos`, `reparto` o `plataformas`, se reemplaza la lista completa de esa relación.
 
 ```bash
-curl -X PUT "http://localhost:3000/api/contenidos/31" \
+curl -X PUT "http://localhost:3000/contenidos/31" \
   -H "Content-Type: application/json" \
   -d '{
     "titulo": "Nueva serie - temporada 2",
@@ -273,12 +272,12 @@ Respuesta `200 OK`:
 
 Si el body está vacío: `400 Bad Request` con `"message": "No se enviaron campos para actualizar."`
 
-### 3.4 DELETE `/api/contenidos/:id`
+### 3.4 DELETE `/contenidos/:id`
 
 Elimina el contenido y, por las claves foráneas con `ON DELETE CASCADE`, sus filas en las tablas intermedias.
 
 ```bash
-curl -X DELETE "http://localhost:3000/api/contenidos/31"
+curl -X DELETE "http://localhost:3000/contenidos/31"
 ```
 
 Respuesta `200 OK`:
@@ -293,12 +292,12 @@ Si no existe: `404 Not Found`.
 
 ## 4. Búsquedas heredadas de la primera preentrega
 
-### 4.1 GET `/api/catalogo`
+### 4.1 GET `/catalogo`
 
-Devuelve el catálogo en formato resumido. Acepta los mismos filtros que `/api/contenidos`.
+Devuelve el catálogo en formato resumido. Acepta los mismos filtros que `/contenidos`.
 
 ```bash
-curl "http://localhost:3000/api/catalogo?titulo=crown"
+curl "http://localhost:3000/catalogo?titulo=crown"
 ```
 
 Respuesta `200 OK`:
@@ -321,12 +320,12 @@ Respuesta `200 OK`:
 }
 ```
 
-### 4.2 GET `/api/titulo/:title`
+### 4.2 GET `/titulo/:title`
 
 Busca en el título sin distinguir mayúsculas ni tildes.
 
 ```bash
-curl "http://localhost:3000/api/titulo/GUASON"
+curl "http://localhost:3000/titulo/GUASON"
 ```
 
 Respuesta `200 OK`:
@@ -351,10 +350,10 @@ Respuesta `200 OK`:
 
 Si no hay coincidencias: `404 Not Found` con `"message": "No se encontraron títulos que contengan \"...\"."`
 
-### 4.3 GET `/api/categoria/:cat`
+### 4.3 GET `/categoria/:cat`
 
 ```bash
-curl "http://localhost:3000/api/categoria/Serie?genero=Comedia"
+curl "http://localhost:3000/categoria/Serie?genero=Comedia"
 ```
 
 Respuesta `200 OK` (resumida):
@@ -377,12 +376,12 @@ Respuesta `200 OK` (resumida):
 }
 ```
 
-### 4.4 GET `/api/reparto/:act`
+### 4.4 GET `/reparto/:act`
 
 Devuelve el título y el reparto de los contenidos en los que participa el actor o actriz buscado.
 
 ```bash
-curl "http://localhost:3000/api/reparto/Pascal"
+curl "http://localhost:3000/reparto/Pascal"
 ```
 
 Respuesta `200 OK`:
@@ -400,10 +399,10 @@ Respuesta `200 OK`:
 }
 ```
 
-### 4.5 GET `/api/trailer/:id`
+### 4.5 GET `/trailer/:id`
 
 ```bash
-curl "http://localhost:3000/api/trailer/1"
+curl "http://localhost:3000/trailer/1"
 ```
 
 Respuesta `200 OK`:
@@ -424,10 +423,10 @@ Si el contenido existe pero no tiene trailer: `404 Not Found` con `"message": "E
 
 ## 5. Categorías
 
-### GET `/api/categorias`
+### GET `/categorias`
 
 ```bash
-curl "http://localhost:3000/api/categorias"
+curl "http://localhost:3000/categorias"
 ```
 
 ```json
@@ -440,20 +439,20 @@ curl "http://localhost:3000/api/categorias"
 }
 ```
 
-### GET `/api/categorias/:id`
+### GET `/categorias/:id`
 
 ```bash
-curl "http://localhost:3000/api/categorias/1"
+curl "http://localhost:3000/categorias/1"
 ```
 
 ```json
 { "data": { "idCategoria": 1, "nombre": "Película" } }
 ```
 
-### POST `/api/categorias`
+### POST `/categorias`
 
 ```bash
-curl -X POST "http://localhost:3000/api/categorias" \
+curl -X POST "http://localhost:3000/categorias" \
   -H "Content-Type: application/json" \
   -d '{ "nombre": "Documental" }'
 ```
@@ -469,10 +468,10 @@ Respuesta `201 Created`:
 
 Si el nombre ya existe: `409 Conflict` con `"message": "Ya existe un registro con ese nombre."`
 
-### PUT `/api/categorias/:id`
+### PUT `/categorias/:id`
 
 ```bash
-curl -X PUT "http://localhost:3000/api/categorias/3" \
+curl -X PUT "http://localhost:3000/categorias/3" \
   -H "Content-Type: application/json" \
   -d '{ "nombre": "Documentales" }'
 ```
@@ -484,10 +483,10 @@ curl -X PUT "http://localhost:3000/api/categorias/3" \
 }
 ```
 
-### DELETE `/api/categorias/:id`
+### DELETE `/categorias/:id`
 
 ```bash
-curl -X DELETE "http://localhost:3000/api/categorias/3"
+curl -X DELETE "http://localhost:3000/categorias/3"
 ```
 
 ```json
@@ -500,10 +499,10 @@ Si la categoría tiene contenidos asociados: `409 Conflict` con `"message": "No 
 
 ## 6. Géneros
 
-### GET `/api/generos`
+### GET `/generos`
 
 ```bash
-curl "http://localhost:3000/api/generos"
+curl "http://localhost:3000/generos"
 ```
 
 ```json
@@ -517,20 +516,20 @@ curl "http://localhost:3000/api/generos"
 }
 ```
 
-### GET `/api/generos/:id`
+### GET `/generos/:id`
 
 ```bash
-curl "http://localhost:3000/api/generos/1"
+curl "http://localhost:3000/generos/1"
 ```
 
 ```json
 { "data": { "idGenero": 1, "nombre": "Drama" } }
 ```
 
-### POST `/api/generos`
+### POST `/generos`
 
 ```bash
-curl -X POST "http://localhost:3000/api/generos" \
+curl -X POST "http://localhost:3000/generos" \
   -H "Content-Type: application/json" \
   -d '{ "nombre": "Documental" }'
 ```
@@ -542,10 +541,10 @@ curl -X POST "http://localhost:3000/api/generos" \
 }
 ```
 
-### PUT `/api/generos/:id`
+### PUT `/generos/:id`
 
 ```bash
-curl -X PUT "http://localhost:3000/api/generos/15" \
+curl -X PUT "http://localhost:3000/generos/15" \
   -H "Content-Type: application/json" \
   -d '{ "nombre": "Documentales" }'
 ```
@@ -557,10 +556,10 @@ curl -X PUT "http://localhost:3000/api/generos/15" \
 }
 ```
 
-### DELETE `/api/generos/:id`
+### DELETE `/generos/:id`
 
 ```bash
-curl -X DELETE "http://localhost:3000/api/generos/15"
+curl -X DELETE "http://localhost:3000/generos/15"
 ```
 
 ```json
@@ -573,10 +572,10 @@ Al eliminar un género, las filas de `contenido_genero` se borran por `ON DELETE
 
 ## 7. Actores
 
-### GET `/api/actores`
+### GET `/actores`
 
 ```bash
-curl "http://localhost:3000/api/actores"
+curl "http://localhost:3000/actores"
 ```
 
 ```json
@@ -589,20 +588,20 @@ curl "http://localhost:3000/api/actores"
 }
 ```
 
-### GET `/api/actores/:id`
+### GET `/actores/:id`
 
 ```bash
-curl "http://localhost:3000/api/actores/1"
+curl "http://localhost:3000/actores/1"
 ```
 
 ```json
 { "data": { "idActor": 1, "nombre": "Claire Foy" } }
 ```
 
-### POST `/api/actores`
+### POST `/actores`
 
 ```bash
-curl -X POST "http://localhost:3000/api/actores" \
+curl -X POST "http://localhost:3000/actores" \
   -H "Content-Type: application/json" \
   -d '{ "nombre": "Actor de prueba" }'
 ```
@@ -614,10 +613,10 @@ curl -X POST "http://localhost:3000/api/actores" \
 }
 ```
 
-### PUT `/api/actores/:id`
+### PUT `/actores/:id`
 
 ```bash
-curl -X PUT "http://localhost:3000/api/actores/137" \
+curl -X PUT "http://localhost:3000/actores/137" \
   -H "Content-Type: application/json" \
   -d '{ "nombre": "Actor actualizado" }'
 ```
@@ -629,10 +628,10 @@ curl -X PUT "http://localhost:3000/api/actores/137" \
 }
 ```
 
-### DELETE `/api/actores/:id`
+### DELETE `/actores/:id`
 
 ```bash
-curl -X DELETE "http://localhost:3000/api/actores/137"
+curl -X DELETE "http://localhost:3000/actores/137"
 ```
 
 ```json
@@ -643,10 +642,10 @@ curl -X DELETE "http://localhost:3000/api/actores/137"
 
 ## 8. Plataformas
 
-### GET `/api/plataformas`
+### GET `/plataformas`
 
 ```bash
-curl "http://localhost:3000/api/plataformas"
+curl "http://localhost:3000/plataformas"
 ```
 
 ```json
@@ -661,20 +660,20 @@ curl "http://localhost:3000/api/plataformas"
 }
 ```
 
-### GET `/api/plataformas/:id`
+### GET `/plataformas/:id`
 
 ```bash
-curl "http://localhost:3000/api/plataformas/1"
+curl "http://localhost:3000/plataformas/1"
 ```
 
 ```json
 { "data": { "idPlataforma": 1, "nombre": "Netflix", "imagen": "netflix.png" } }
 ```
 
-### POST `/api/plataformas`
+### POST `/plataformas`
 
 ```bash
-curl -X POST "http://localhost:3000/api/plataformas" \
+curl -X POST "http://localhost:3000/plataformas" \
   -H "Content-Type: application/json" \
   -d '{ "nombre": "Star+", "imagen": "star.png" }'
 ```
@@ -686,10 +685,10 @@ curl -X POST "http://localhost:3000/api/plataformas" \
 }
 ```
 
-### PUT `/api/plataformas/:id`
+### PUT `/plataformas/:id`
 
 ```bash
-curl -X PUT "http://localhost:3000/api/plataformas/5" \
+curl -X PUT "http://localhost:3000/plataformas/5" \
   -H "Content-Type: application/json" \
   -d '{ "imagen": "starplus.png" }'
 ```
@@ -701,10 +700,10 @@ curl -X PUT "http://localhost:3000/api/plataformas/5" \
 }
 ```
 
-### DELETE `/api/plataformas/:id`
+### DELETE `/plataformas/:id`
 
 ```bash
-curl -X DELETE "http://localhost:3000/api/plataformas/5"
+curl -X DELETE "http://localhost:3000/plataformas/5"
 ```
 
 ```json
@@ -715,10 +714,10 @@ curl -X DELETE "http://localhost:3000/api/plataformas/5"
 
 ## 9. Estado del servidor
 
-### GET `/api/health`
+### GET `/health`
 
 ```bash
-curl "http://localhost:3000/api/health"
+curl "http://localhost:3000/health"
 ```
 
 ```json
@@ -749,12 +748,12 @@ Todos los errores respetan esta estructura:
 | Código | Significado | Ejemplo en la API |
 | --- | --- | --- |
 | `200 OK` | Consulta o modificación exitosa. | Listados, actualizaciones y eliminaciones. |
-| `201 Created` | Recurso creado. | `POST /api/contenidos`. |
+| `201 Created` | Recurso creado. | `POST /contenidos`. |
 | `400 Bad Request` | Datos o parámetros inválidos. | `temporadas: "dos"`, id no numérico, body vacío. |
-| `404 Not Found` | Recurso o ruta inexistente. | `GET /api/contenidos/9999`. |
+| `404 Not Found` | Recurso o ruta inexistente. | `GET /contenidos/9999`. |
 | `409 Conflict` | Conflicto con datos existentes o relacionados. | Nombre duplicado, categoría con contenidos. |
 | `500 Internal Server Error` | Error inesperado del servidor. | Falla de conexión durante una consulta. |
-| `503 Service Unavailable` | Servicio no disponible. | MySQL caído al consultar `/api/health`. |
+| `503 Service Unavailable` | Servicio no disponible. | MySQL caído al consultar `/health`. |
 
 Ejemplos de errores:
 
@@ -762,7 +761,7 @@ Ejemplos de errores:
 {
   "error": true,
   "status": 404,
-  "message": "Ruta no encontrada: GET /api/no-existe"
+  "message": "Ruta no encontrada: GET /no-existe"
 }
 ```
 
@@ -786,7 +785,7 @@ Ejemplos de errores:
 
 ## 11. Interfaz web con EJS
 
-El catálogo de `http://localhost:3000` se renderiza en el servidor con EJS: cada controlador consulta MySQL a través de Sequelize y pasa los datos ya formateados a las plantillas de `views/`. No se usa JavaScript del lado del cliente para imprimir el contenido; las páginas son HTML generado por Express.
+El catálogo de `http://localhost:3000` se renderiza en el servidor con EJS: cada controlador consulta MySQL a través de Sequelize y pasa los datos ya formateados a las plantillas de `views/`.
 
 | Método | Ruta | Descripción |
 | --- | --- | --- |
@@ -800,5 +799,5 @@ El catálogo de `http://localhost:3000` se renderiza en el servidor con EJS: cad
 
 - Los filtros se envían con `GET` y se reflejan en la URL (`/?categoria=Serie&genero=Drama`).
 - Los formularios de alta y edición se validan en el servidor: si hay errores, se vuelve a renderizar `formulario.ejs` con el detalle y estado `400`.
-- Las rutas HTML inexistentes y los errores del servidor muestran `error.ejs`; las rutas `/api` siguen respondiendo siempre JSON.
+- Las rutas HTML inexistentes y los errores del servidor muestran `error.ejs`; las rutas de la API siguen respondiendo siempre JSON.
 - La única interacción en el navegador es la confirmación antes de eliminar (`onsubmit="return confirm(...)"`).

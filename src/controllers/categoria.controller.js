@@ -4,6 +4,6 @@ const createCrudController = require('./crudController');
 module.exports = createCrudController(Categoria, {
   nombre: 'categoría',
   articulo: 'la',
-  ruta: '/api/categorias',
+  ruta: '/categorias',
   pk: 'idCategoria'
 });

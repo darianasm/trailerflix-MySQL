@@ -3,7 +3,7 @@ const contenidoService = require('../services/contenido.service');
 const ApiError = require('../utils/ApiError');
 const { parsearId, validarContenido, validarActualizacionContenido } = require('../utils/validaciones');
 
-// GET /api/contenidos
+// GET /contenidos
 async function listar(req, res, next) {
   try {
     const contenidos = await contenidoService.listar(req.query);
@@ -13,7 +13,7 @@ async function listar(req, res, next) {
   }
 }
 
-// GET /api/contenidos/:id
+// GET /contenidos/:id
 async function obtenerPorId(req, res, next) {
   try {
     const id = parsearId(req.params.id);
@@ -24,7 +24,7 @@ async function obtenerPorId(req, res, next) {
   }
 }
 
-// POST /api/contenidos
+// POST /contenidos
 async function crear(req, res, next) {
   try {
     const { datos, relaciones } = validarContenido(req.body);
@@ -41,7 +41,7 @@ async function crear(req, res, next) {
 
       res
         .status(201)
-        .location(`/api/contenidos/${creado.idContenido}`)
+        .location(`/contenidos/${creado.idContenido}`)
         .json({ message: 'Contenido creado correctamente.', data: contenido });
     } catch (error) {
       await transaccion.rollback();
@@ -52,7 +52,7 @@ async function crear(req, res, next) {
   }
 }
 
-// PUT /api/contenidos/:id
+// PUT /contenidos/:id
 async function actualizar(req, res, next) {
   try {
     const id = parsearId(req.params.id);
@@ -81,7 +81,7 @@ async function actualizar(req, res, next) {
   }
 }
 
-// DELETE /api/contenidos/:id
+// DELETE /contenidos/:id
 async function eliminar(req, res, next) {
   try {
     const id = parsearId(req.params.id);
@@ -95,7 +95,7 @@ async function eliminar(req, res, next) {
   }
 }
 
-// GET /api/catalogo
+// GET /catalogo
 async function catalogo(req, res, next) {
   try {
     const contenidos = await contenidoService.listar(req.query);
@@ -106,7 +106,7 @@ async function catalogo(req, res, next) {
   }
 }
 
-// GET /api/titulo/:title
+// GET /titulo/:title
 async function porTitulo(req, res, next) {
   try {
     const contenidos = await contenidoService.listar({ ...req.query, titulo: req.params.title });
@@ -122,7 +122,7 @@ async function porTitulo(req, res, next) {
   }
 }
 
-// GET /api/categoria/:cat
+// GET /categoria/:cat
 async function porCategoria(req, res, next) {
   try {
     const contenidos = await contenidoService.listar({ ...req.query, categoria: req.params.cat });
@@ -138,7 +138,7 @@ async function porCategoria(req, res, next) {
   }
 }
 
-// GET /api/reparto/:act
+// GET /reparto/:act
 async function porReparto(req, res, next) {
   try {
     const contenidos = await contenidoService.listar({ ...req.query, actor: req.params.act });
@@ -158,7 +158,7 @@ async function porReparto(req, res, next) {
   }
 }
 
-// GET /api/trailer/:id
+// GET /trailer/:id
 async function porTrailer(req, res, next) {
   try {
     const id = parsearId(req.params.id);

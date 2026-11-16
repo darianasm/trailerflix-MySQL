@@ -62,7 +62,7 @@ function createCrudController(Model, options) {
   }
 
   return {
-    // GET /api/recurso
+    // GET /recurso
     listar: async (req, res, next) => {
       try {
         const data = await Model.findAll({ order: [[pk, 'ASC']] });
@@ -72,7 +72,7 @@ function createCrudController(Model, options) {
       }
     },
 
-    // GET /api/recurso/:id
+    // GET /recurso/:id
     obtener: async (req, res, next) => {
       try {
         const id = parsearId(req.params.id);
@@ -83,7 +83,7 @@ function createCrudController(Model, options) {
       }
     },
 
-    // POST /api/recurso
+    // POST /recurso
     crear: async (req, res, next) => {
       try {
         const datos = prepararDatos(req.body, { parcial: false });
@@ -98,7 +98,7 @@ function createCrudController(Model, options) {
       }
     },
 
-    // PUT /api/recurso/:id
+    // PUT /recurso/:id
     actualizar: async (req, res, next) => {
       try {
         const id = parsearId(req.params.id);
@@ -115,7 +115,7 @@ function createCrudController(Model, options) {
       }
     },
 
-    // DELETE /api/recurso/:id
+    // DELETE /recurso/:id
     eliminar: async (req, res, next) => {
       try {
         const id = parsearId(req.params.id);
