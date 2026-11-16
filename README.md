@@ -70,7 +70,7 @@ trailerflix-MySQL/
 │   ├── controllers/         # Lógica de cada recurso
 │   ├── middlewares/         # 404 y manejo centralizado de errores
 │   ├── models/              # Modelos y relaciones
-│   ├── routes/              # Rutas de la API
+│   ├── routes/              # Rutas de la API y de las vistas EJS
 │   ├── services/            # Consultas y filtros de contenidos
 │   └── utils/               # ApiError y validaciones
 ├── .env.example
