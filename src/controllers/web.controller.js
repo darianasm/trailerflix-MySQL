@@ -51,7 +51,16 @@ function normalizarIds(valor) {
   if (valor === undefined || valor === null || valor === '') return [];
 
   const lista = Array.isArray(valor) ? valor : [valor];
-  return lista.map(Number).filter((numero) => Number.isInteger(numero) && numero > 0);
+
+  // Convierte los strings numéricos de los checkboxes y deja los valores
+  // inválidos intactos para que la validación los rechace con un 400.
+  return lista.map((item) => {
+    if (typeof item === 'string' && /^-?\d+$/.test(item.trim())) {
+      return Number(item.trim());
+    }
+
+    return item;
+  });
 }
 
 // Los formularios HTML no distinguen entre "campo ausente" y "lista vacía":

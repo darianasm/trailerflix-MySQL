@@ -1,9 +1,32 @@
 const ApiError = require('./ApiError');
 
-function parsearId(valor, etiqueta = 'id') {
-  const numero = Number(valor);
+// Acepta enteros reales o strings numéricos (los formularios HTML envían strings).
+// Rechaza booleanos, arrays, objetos, decimales y textos.
+function esEnteroValido(valor) {
+  if (typeof valor === 'number') {
+    return Number.isInteger(valor);
+  }
 
-  if (!Number.isInteger(numero) || numero <= 0 || numero > 2147483647) {
+  if (typeof valor === 'string') {
+    const texto = valor.trim();
+    return /^-?\d+$/.test(texto) && Number.isInteger(Number(texto));
+  }
+
+  return false;
+}
+
+function convertirEntero(valor) {
+  return typeof valor === 'number' ? valor : Number(valor.trim());
+}
+
+function parsearId(valor, etiqueta = 'id') {
+  if (!esEnteroValido(valor)) {
+    throw new ApiError(400, `El ${etiqueta} debe ser un número entero positivo.`);
+  }
+
+  const numero = convertirEntero(valor);
+
+  if (numero <= 0 || numero > 2147483647) {
     throw new ApiError(400, `El ${etiqueta} debe ser un número entero positivo.`);
   }
 
@@ -26,17 +49,10 @@ function validarContenido(body) {
     datos.sinopsis = body.sinopsis.trim();
   }
 
-  const temporadas = Number(body.temporadas);
-  if (
-    body.temporadas === undefined ||
-    body.temporadas === null ||
-    body.temporadas === '' ||
-    !Number.isInteger(temporadas) ||
-    temporadas < 0
-  ) {
+  if (!esEnteroValido(body.temporadas) || convertirEntero(body.temporadas) < 0) {
     errores.push("El campo 'temporadas' debe ser un entero mayor o igual a 0.");
   } else {
-    datos.temporadas = temporadas;
+    datos.temporadas = convertirEntero(body.temporadas);
   }
 
   if (body.trailer !== undefined) {
@@ -47,11 +63,10 @@ function validarContenido(body) {
     }
   }
 
-  const idCategoria = Number(body.idCategoria);
-  if (!Number.isInteger(idCategoria) || idCategoria <= 0) {
+  if (!esEnteroValido(body.idCategoria) || convertirEntero(body.idCategoria) <= 0) {
     errores.push("El campo 'idCategoria' es obligatorio y debe ser un entero positivo.");
   } else {
-    datos.idCategoria = idCategoria;
+    datos.idCategoria = convertirEntero(body.idCategoria);
   }
 
   const relaciones = validarRelaciones(body, errores);
@@ -85,11 +100,10 @@ function validarActualizacionContenido(body) {
   }
 
   if (tiene('temporadas')) {
-    const temporadas = Number(body.temporadas);
-    if (!Number.isInteger(temporadas) || temporadas < 0) {
+    if (!esEnteroValido(body.temporadas) || convertirEntero(body.temporadas) < 0) {
       errores.push("El campo 'temporadas' debe ser un entero mayor o igual a 0.");
     } else {
-      datos.temporadas = temporadas;
+      datos.temporadas = convertirEntero(body.temporadas);
     }
   }
 
@@ -102,11 +116,10 @@ function validarActualizacionContenido(body) {
   }
 
   if (tiene('idCategoria')) {
-    const idCategoria = Number(body.idCategoria);
-    if (!Number.isInteger(idCategoria) || idCategoria <= 0) {
+    if (!esEnteroValido(body.idCategoria) || convertirEntero(body.idCategoria) <= 0) {
       errores.push("El campo 'idCategoria' debe ser un entero positivo.");
     } else {
-      datos.idCategoria = idCategoria;
+      datos.idCategoria = convertirEntero(body.idCategoria);
     }
   }
 
@@ -136,8 +149,18 @@ function validarRelaciones(body, errores) {
       return;
     }
 
-    const ids = body[campo].map(Number);
-    if (ids.some((id) => !Number.isInteger(id) || id <= 0)) {
+    const ids = [];
+    const invalido = body[campo].some((valor) => {
+      if (!esEnteroValido(valor)) return true;
+
+      const id = convertirEntero(valor);
+      if (id <= 0) return true;
+
+      ids.push(id);
+      return false;
+    });
+
+    if (invalido) {
       errores.push(`El campo '${campo}' solo admite ids enteros positivos.`);
       return;
     }
@@ -149,6 +172,8 @@ function validarRelaciones(body, errores) {
 }
 
 module.exports = {
+  esEnteroValido,
+  convertirEntero,
   parsearId,
   validarContenido,
   validarActualizacionContenido

@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const { Contenido, Categoria, Genero, Actor, Plataforma } = require('../models');
 const ApiError = require('../utils/ApiError');
+const { esEnteroValido, convertirEntero } = require('../utils/validaciones');
 
 // Datos que se devuelven siempre que se consulta un contenido.
 const includeCompleto = [
@@ -53,11 +54,10 @@ function construirWhere(query) {
   }
 
   if (query.temporadas !== undefined) {
-    const temporadas = Number(query.temporadas);
-    if (!Number.isInteger(temporadas) || temporadas < 0) {
+    if (!esEnteroValido(query.temporadas) || convertirEntero(query.temporadas) < 0) {
       throw new ApiError(400, "El parámetro 'temporadas' debe ser un entero mayor o igual a 0.");
     }
-    where.temporadas = temporadas;
+    where.temporadas = convertirEntero(query.temporadas);
   }
 
   if (query.trailer !== undefined) {
