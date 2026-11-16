@@ -35,6 +35,16 @@ function errorHandler(error, req, res, next) {
     console.error(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`, error);
   }
 
+  // Las rutas de la API siempre responden JSON; las páginas muestran el error.
+  if (!req.path.startsWith('/api') && req.accepts('html')) {
+    return res.status(status).render('error', {
+      titulo: `Error ${status}`,
+      status,
+      message,
+      details
+    });
+  }
+
   res.status(status).json({
     error: true,
     status,

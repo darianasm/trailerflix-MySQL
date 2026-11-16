@@ -2,7 +2,7 @@
 
 ## Descripción del proyecto
 
-Trailerflix es una API REST para administrar un catálogo de películas y series. El proyecto está desarrollado con Node.js y Express, se conecta a una base de datos MySQL mediante Sequelize y expone operaciones CRUD completas sobre contenidos y sobre las tablas relacionadas (categorías, géneros, actores y plataformas). Esta tercera preentrega retoma la API de la preentrega anterior, que usaba MongoDB, y la migra a un modelo relacional; además incluye una página web simple con Bootstrap para probar los endpoints de forma visual y documentación detallada en Markdown.
+Trailerflix es una API REST para administrar un catálogo de películas y series. El proyecto está desarrollado con Node.js y Express, se conecta a una base de datos MySQL mediante Sequelize y expone operaciones CRUD completas sobre contenidos y sobre las tablas relacionadas (categorías, géneros, actores y plataformas). Esta tercera preentrega retoma la API de la preentrega anterior, que usaba MongoDB, y la migra a un modelo relacional; además incluye un catálogo web con Bootstrap renderizado en el servidor con EJS y documentación detallada en Markdown.
 
 ## Origen del set de datos
 
@@ -22,7 +22,8 @@ El objetivo de la entrega es diseñar un modelo relacional de más de seis tabla
 | MySQL 8 | Base de datos relacional `trailerflix`. |
 | mysql2 | Driver de conexión entre Node.js y MySQL. |
 | dotenv | Lectura de credenciales y configuración desde `.env`. |
-| Bootstrap 5 | Interfaz web de prueba servida desde `/public`. |
+| EJS | Motor de plantillas que renderiza el catálogo en el servidor. |
+| Bootstrap 5 | Estilos de las páginas web; el CSS propio se sirve desde `/public`. |
 | MongoDB | Motor utilizado en la preentrega anterior, mencionado como etapa previa del proyecto. |
 
 ## Modelo de datos
@@ -56,9 +57,13 @@ trailerflix-MySQL/
 ├── docs/
 │   └── API.md               # Documentación de todos los endpoints
 ├── public/
-│   ├── index.html           # Interfaz de prueba con Bootstrap
-│   ├── css/styles.css
-│   └── js/app.js
+│   └── css/styles.css       # Estilos de las vistas
+├── views/
+│   ├── partials/            # Header, footer y tarjeta reutilizables
+│   ├── catalogo.ejs         # Listado con filtros
+│   ├── detalle.ejs          # Ficha de un contenido
+│   ├── formulario.ejs       # Alta y edición
+│   └── error.ejs            # Páginas de error
 ├── src/
 │   ├── app.js               # Configuración de Express
 │   ├── config/database.js   # Conexión con Sequelize
@@ -77,7 +82,7 @@ trailerflix-MySQL/
 
 ## Instalación y ejecución
 
-Primero se importa el script SQL en MySQL y luego se instalan las dependencias con `npm install`. Después se copia `.env.example` a `.env`, se completan las credenciales locales y se inicia el servidor con `npm run dev` (o `npm start`). La API queda disponible en `http://localhost:3000/api` y la página de prueba en `http://localhost:3000`.
+Primero se importa el script SQL en MySQL y luego se instalan las dependencias con `npm install`. Después se copia `.env.example` a `.env`, se completan las credenciales locales y se inicia el servidor con `npm run dev` (o `npm start`). La API queda disponible en `http://localhost:3000/api` y el catálogo web en `http://localhost:3000`.
 
 ```bash
 mysql -u root -p -e "source database/trailerflix.sql"
@@ -125,6 +130,22 @@ El script también se puede importar desde MySQL Workbench o desde Laragon. Los 
 | GET/PUT/DELETE | `/api/plataformas/:id` | Consulta, actualiza o elimina una plataforma. |
 
 Las búsquedas de la primera preentrega también están disponibles sin el prefijo `/api` (`/catalogo`, `/titulo/:title`, `/categoria/:cat`, `/reparto/:act` y `/trailer/:id`) para mantener compatibilidad. La tabla completa, los parámetros de filtrado, los ejemplos de request/response y los códigos de error están en [`docs/API.md`](docs/API.md).
+
+## Interfaz web con EJS
+
+El catálogo se renderiza en el servidor con EJS: los controladores consultan MySQL con Sequelize y envían los datos listos a las plantillas de `views/`, sin JavaScript del lado del cliente para mostrar contenido. Los filtros se envían por `GET` y las altas, ediciones y eliminaciones por `POST` con redirecciones y mensajes de confirmación.
+
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| GET | `/` | Catálogo con filtros por título, categoría, género, plataforma, trailer y orden. |
+| GET | `/contenido/:id` | Ficha del contenido con sinopsis, géneros, reparto y plataformas. |
+| GET | `/contenido/nuevo` | Formulario de alta. |
+| POST | `/contenido` | Guarda un contenido nuevo y redirige a su ficha. |
+| GET | `/contenido/:id/editar` | Formulario de edición con los datos actuales. |
+| POST | `/contenido/:id/editar` | Guarda los cambios del contenido. |
+| POST | `/contenido/:id/eliminar` | Elimina el contenido y vuelve al catálogo. |
+
+Los errores de validación vuelven a mostrar el formulario con el detalle de los campos inválidos, y las rutas HTML inexistentes responden con una página 404; la API mantiene sus respuestas JSON.
 
 ## CRUD y filtros
 

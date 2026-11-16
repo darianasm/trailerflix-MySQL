@@ -2,6 +2,7 @@
 DROP DATABASE IF EXISTS trailerflix;
 CREATE DATABASE trailerflix CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE trailerflix;
+SET NAMES utf8mb4;
 
 -- 2. Crear tablas principales
 CREATE TABLE categoria (

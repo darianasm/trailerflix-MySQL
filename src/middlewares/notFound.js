@@ -1,9 +1,16 @@
 function notFound(req, res) {
-  res.status(404).json({
-    error: true,
-    status: 404,
-    message: `Ruta no encontrada: ${req.method} ${req.originalUrl}`
-  });
+  const message = `Ruta no encontrada: ${req.method} ${req.originalUrl}`;
+
+  if (!req.path.startsWith('/api') && req.accepts('html')) {
+    return res.status(404).render('error', {
+      titulo: 'Página no encontrada',
+      status: 404,
+      message,
+      details: null
+    });
+  }
+
+  res.status(404).json({ error: true, status: 404, message });
 }
 
 module.exports = notFound;

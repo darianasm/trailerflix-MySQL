@@ -1,23 +1,7 @@
-const { sequelize, Contenido, Categoria } = require('../models');
+const { sequelize, Contenido } = require('../models');
 const contenidoService = require('../services/contenido.service');
 const ApiError = require('../utils/ApiError');
 const { parsearId, validarContenido, validarActualizacionContenido } = require('../utils/validaciones');
-
-async function verificarCategoria(idCategoria) {
-  const categoria = await Categoria.findOne({ where: { idCategoria } });
-
-  if (!categoria) {
-    throw new ApiError(400, `La categoría con id ${idCategoria} no existe.`);
-  }
-}
-
-async function guardarRelaciones(contenido, relaciones, transaction) {
-  if (relaciones.generos) await contenido.setGeneros(relaciones.generos, { transaction });
-  if (relaciones.reparto) await contenido.setReparto(relaciones.reparto, { transaction });
-  if (relaciones.plataformas) {
-    await contenido.setPlataformas(relaciones.plataformas, { transaction });
-  }
-}
 
 // GET /api/contenidos
 async function listar(req, res, next) {
@@ -44,13 +28,13 @@ async function obtenerPorId(req, res, next) {
 async function crear(req, res, next) {
   try {
     const { datos, relaciones } = validarContenido(req.body);
-    await verificarCategoria(datos.idCategoria);
+    await contenidoService.verificarCategoria(datos.idCategoria);
 
     const transaccion = await sequelize.transaction();
 
     try {
       const creado = await Contenido.create(datos, { transaction: transaccion });
-      await guardarRelaciones(creado, relaciones, transaccion);
+      await contenidoService.guardarRelaciones(creado, relaciones, transaccion);
       await transaccion.commit();
 
       const contenido = await contenidoService.obtenerPorId(creado.idContenido);
@@ -76,14 +60,14 @@ async function actualizar(req, res, next) {
     const { datos, relaciones } = validarActualizacionContenido(req.body);
 
     if (datos.idCategoria !== undefined) {
-      await verificarCategoria(datos.idCategoria);
+      await contenidoService.verificarCategoria(datos.idCategoria);
     }
 
     const transaccion = await sequelize.transaction();
 
     try {
       await contenido.update(datos, { transaction: transaccion });
-      await guardarRelaciones(contenido, relaciones, transaccion);
+      await contenidoService.guardarRelaciones(contenido, relaciones, transaccion);
       await transaccion.commit();
     } catch (error) {
       await transaccion.rollback();

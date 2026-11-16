@@ -6,6 +6,7 @@ API REST desarrollada con Node.js, Express, Sequelize y MySQL.
 - **Formato:** JSON (`Content-Type: application/json`)
 - **Base de datos:** `trailerflix` (8 tablas relacionadas)
 - **Alias de compatibilidad:** las búsquedas `/catalogo`, `/titulo/:title`, `/categoria/:cat`, `/reparto/:act` y `/trailer/:id` también responden en la raíz del servidor (`http://localhost:3000/catalogo`, etc.).
+- **Interfaz web:** `http://localhost:3000` (HTML renderizado en el servidor con EJS).
 
 ---
 
@@ -783,14 +784,21 @@ Ejemplos de errores:
 
 ---
 
-## 11. Interfaz web de prueba
+## 11. Interfaz web con EJS
 
-La página `http://localhost:3000` consume estos mismos endpoints y permite:
+El catálogo de `http://localhost:3000` se renderiza en el servidor con EJS: cada controlador consulta MySQL a través de Sequelize y pasa los datos ya formateados a las plantillas de `views/`. No se usa JavaScript del lado del cliente para imprimir el contenido; las páginas son HTML generado por Express.
 
-- Filtrar por título, categoría, género, plataforma y disponibilidad de trailer.
-- Ver el detalle de cada contenido, incluidos reparto y plataformas.
-- Crear un contenido.
-- Editar un contenido.
-- Eliminar un contenido con confirmación.
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| GET | `/` | Catálogo con filtros por título, categoría, género, plataforma, trailer y orden. |
+| GET | `/contenido/:id` | Detalle del contenido, incluidos reparto y plataformas. |
+| GET | `/contenido/nuevo` | Formulario de alta. |
+| POST | `/contenido` | Crea el contenido y redirige a `/contenido/:id?ok=...`. |
+| GET | `/contenido/:id/editar` | Formulario de edición con los valores actuales. |
+| POST | `/contenido/:id/editar` | Actualiza el contenido y redirige a su detalle. |
+| POST | `/contenido/:id/eliminar` | Elimina el contenido y vuelve al catálogo. |
 
-No es una aplicación independiente: usa `fetch` contra `/api` y sirve como demostración visual de la API.
+- Los filtros se envían con `GET` y se reflejan en la URL (`/?categoria=Serie&genero=Drama`).
+- Los formularios de alta y edición se validan en el servidor: si hay errores, se vuelve a renderizar `formulario.ejs` con el detalle y estado `400`.
+- Las rutas HTML inexistentes y los errores del servidor muestran `error.ejs`; las rutas `/api` siguen respondiendo siempre JSON.
+- La única interacción en el navegador es la confirmación antes de eliminar (`onsubmit="return confirm(...)"`).

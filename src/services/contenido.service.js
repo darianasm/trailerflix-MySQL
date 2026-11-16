@@ -181,6 +181,24 @@ async function obtenerPorId(id) {
   return contenido;
 }
 
+async function verificarCategoria(idCategoria) {
+  const categoria = await Categoria.findOne({ where: { idCategoria } });
+
+  if (!categoria) {
+    throw new ApiError(400, `La categoría con id ${idCategoria} no existe.`);
+  }
+
+  return categoria;
+}
+
+async function guardarRelaciones(contenido, relaciones, transaction) {
+  if (relaciones.generos) await contenido.setGeneros(relaciones.generos, { transaction });
+  if (relaciones.reparto) await contenido.setReparto(relaciones.reparto, { transaction });
+  if (relaciones.plataformas) {
+    await contenido.setPlataformas(relaciones.plataformas, { transaction });
+  }
+}
+
 // Formato resumido que usan /api/catalogo y las búsquedas de la preentrega 1.
 function formatearCatalogo(contenido) {
   const datos = contenido.toJSON ? contenido.toJSON() : contenido;
@@ -201,5 +219,7 @@ module.exports = {
   listar,
   obtenerPorId,
   formatearCatalogo,
+  verificarCategoria,
+  guardarRelaciones,
   includeCompleto
 };
